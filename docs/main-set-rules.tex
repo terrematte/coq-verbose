@@ -1,0 +1,2213 @@
+% Signed (cut-based) Natural Deduction for Set Theory, as a basis for exercise generation
+% 2022.2 - João Marcos
+
+
+\documentclass[11pt]{article}
+
+\usepackage[a4paper, total={7in, 10in}]{geometry}
+
+\usepackage[portuguese]{babel}
+\usepackage[T1]{fontenc}
+
+\usepackage{upgreek,booktabs,yhmath,bbm}%
+\usepackage{ulem}
+\usepackage{amssymb,latexsym}
+%%\usepackage{stix}
+\usepackage[dvipsnames]{xcolor}
+%\usepackage{color,xcolor}
+%\usepackage{xspace}
+%\usepackage{stackengine}
+%\usepackage{bbding}
+%
+%\usepackage{enumerate}
+%
+%\usepackage{url,hyperref}
+%
+%\usepackage{tikz}
+%\usetikzlibrary{matrix,arrows,shadows,shapes.symbols,shapes.misc}
+%
+\usepackage{proof}
+%\usepackage{bussproofs}
+%
+%\usepackage{amsthm}
+%\theoremstyle{definition}
+%\newtheorem*{defin}{Definição}
+%\newtheorem*{exerc}{Exercício}
+%\newtheorem{obs}{Nota}
+%\newtheorem{theo}{Teorema}
+%
+%% insert notes in the margin
+%\def\nb #1{${}^\star$\marginpar{\raggedright\scriptsize #1}}
+%% more sophisticated version of notes in the margin
+%\newcommand*\mnote[3][0pt]{\textcolor{blue}{$^\star$}%
+%  \if l#2\reversemarginpar\def\pointer{\blacktriangleright}%
+%    \def\stackalignment{r}\fi%
+%  \if r#2\normalmarginpar\def\pointer{\blacktriangleleft}%
+%    \def\stackalignment{l}\fi%
+%  \marginpar{%
+%    \topinset{%
+%      \scalebox{1.0}{\textcolor{blue}{$\pointer$}}}{%
+%      \belowbaseline[-1.5\baselineskip-#1]{%
+%        \stackengine%
+%          {-5pt}%
+%          {\fcolorbox{blue}{white}{\parbox{1.5cm}%
+%            {\vspace{3pt}\raggedright\tiny#3}}}%
+%          {~\colorbox{white}{\sffamily \tiny Obs:}}%
+%          {O}%
+%          {l}%
+%          {F}%
+%          {F}%
+%          {S}%
+%        }%
+%      }{%
+%      3ex+#1}{%
+%      -1.75ex}%
+%  }%
+%}
+%
+%\makeatletter
+%\def \equalsfill{$\m@th \mathord=\mkern-7mu
+%\cleaders \hbox{$\!\mathord=\!$}\hfill \mkern-7mu \mathord=$}
+%\makeatother
+%\newcommand{\defeq}{\ensuremath{\stackrel{\text{\tiny def}}{\hbox{\equalsfill}}}}
+%
+%\input{preamble.tex}
+
+\input{commands.tex}
+
+
+\begin{document}
+
+\noindent
+\section*{Some ND-style rules for set-theoretic reasoning}
+\bigskip
+
+
+\subsection*{Assertions vs Denials}
+$\Opp{\Assert{\chi}}:={\Deny{\chi}}$ \\[2mm]
+$\Opp{\Deny{\chi}}:={\Assert{\chi}}$ 
+\bigskip
+
+
+\subsection*{Primitive meta-rules}
+
+\noindent
+\begin{tabular}{ccc}
+% pseudo-scotus
+$
+\infer[\mathbf{PPS}(\varphi)]{\divideontimes}{\infer*{\varphi}{} & \infer*{\Opp{\varphi}}{}}
+$
+\hspace{1cm}
+&
+% excluded middle
+$
+\infer[\mathbf{PEM(\varphi)}{[i,j]}]{\psi}{
+	\infer*{\psi}{\infer[\Label{i}]{\varphi}{}}
+	&
+	\infer*{\psi}{\infer[\Label{j}]{\Opp{\varphi}}{}}
+}
+$
+\hspace{1cm}
+%&
+%% double negative elimination
+%$
+%\infer[\mathbf{DNE}]{\varphi}{
+%	\infer*{\widetilde{\Opp{\varphi}}}{}
+%}
+%$
+\end{tabular}
+
+
+\subsection*{Derived meta-rules}
+
+\noindent
+\begin{tabular}{ccc}
+% consequentia mirabilis
+$
+\infer[\mathbf{MIR}{[i]}]{\varphi}{
+	\infer*{\Opp{\varphi}}{\infer[\Label{i}]{\varphi}{}}
+}
+$
+\hspace{1cm}
+&
+% proof by contradiction
+$
+\infer[\mathbf{PBC}{[i]}]{\varphi}{
+	\infer*{\divideontimes}{\infer[\Label{i}]{\Opp{\varphi}}{}}
+}
+$
+\hspace{1cm}
+&
+% contraposition
+$
+\infer[\mathbf{CPS}(\psi){[i]}]{\Opp{\varphi}}{
+	\infer*{\psi}{\infer[{\Label{i}}]{\varphi}{}}
+	&
+	\infer*{\Opp{\psi}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+
+% Set-Builder
+\subsection*{Set-Builder: $\SetB{\bigcirc_1}{\bigcirc_2}{\bigcirc_3}{\bigcirc_4}$}
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\Spec}\Intro{1}]{\Assert{c_2\in\SetB{c}{c_1}{\varphi}{x}}}{
+	\infer*{\Assert{c_2\in c_1}}{}
+	& &
+	\infer*{\varphi[x\mapsto c_2]}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\Spec}\Intro{2}{[i]}]{\Assert{c_2\in\SetB{c}{c_1}{\varphi}{x}}}{
+	\infer*{\Assert{c_2\in c_1}}{}
+	& &
+	\infer*{\divideontimes}{\infer[\Label{i}]{\Opp{\varphi}[x\mapsto c_2]}{}}{}
+}
+$
+\\[2mm]
+$
+\infer[\AssertRule{\Spec}\Elim{2}]{\Assert{c_2\in c_1}}{
+	\infer*{\Assert{c_2\in\SetB{c}{c_1}{\varphi}{x}}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\Spec}\Elim{1}]{\varphi[x\mapsto c_2]}{
+	\infer*{\Assert{c_2\in\SetB{c}{c_1}{\varphi}{x}}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\DenyRule{\Spec}\Intro{1}]{\Deny{c_2\in\SetB{c}{c_1}{\varphi}{x}}}{
+	\infer*{\Deny{c_2\in c_1}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\Spec}\Intro{2}]{\Deny{c_2\in\SetB{c}{c_1}{\varphi}{x}}}{
+	\infer*{\Opp{\varphi}[x\mapsto c_2]}{}
+}
+$
+\end{tabular}
+\bigskip
+
+% Hypothetical reasoning
+%\noindent
+%\begin{tabular}{ccc}
+%\infer[\DenyRule{\Spec}\Elim{}]{\psi}{
+%	\infer*{\Deny{c_2\in\SetB{c}{c_1}{\varphi}{x}}}{}
+%	& 
+%	\infer*{\psi}{\infer{\Deny{c_2\in c_1}}{}}
+%	& 
+%	\infer*{\psi}{\infer{\Opp{\varphi}[x\mapsto c_2]}{}}
+%}
+%\end{tabular}
+%\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\DenyRule{\Spec}\Elim{1}]{\Opp{\varphi}[x\mapsto c_2]}{
+	\infer*{\Deny{c_2\in\SetB{c}{c_1}{\varphi}{x}}}{}
+	& 
+	\infer*{\Assert{c_2\in c_1}}{}
+}
+$
+\hspace{5mm}
+&
+$
+\infer[\DenyRule{\Spec}\Elim{2}]{\Deny{c_2\in c_1}}{
+	\infer*{\Deny{c_2\in\SetB{c}{c_1}{\varphi}{x}}}{}
+	& 
+	\infer*{{\varphi}[x\mapsto c_2]}{}
+}
+$
+\end{tabular}
+\bigskip
+
+
+\newpage
+% \Incl
+\subsection*{Inclusion [\texttt{rel}]: $\bigcirc_1\subseteq\bigcirc_2$}
+\smallskip
+
+Axiom: $c_1 \subseteq c_2\text{ iff }(\forall c)(c\in c_1\rightarrow c\in c_2)$
+\smallskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\subseteq}\Intro{}{[i,j,k]}]{\Assert{c_1\subseteq c_2}}{
+	\infer*{\divideontimes}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+		& 
+		\infer[\Label{k}]{\Deny{c\in c_2}}{}
+	}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\subseteq}\Intro{1}{[i,j]}]{\Assert{c_1\subseteq c_2}}{
+	\infer*{\Assert{c\in c_2}}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+	}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\subseteq}\Intro{2}{[i,j]}]{\Assert{c_1\subseteq c_2}}{
+	\infer*{\Deny{c\in c_1}}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Deny{c\in c_2}}{}
+	}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\subseteq}\Elim{1}]{\Assert{c_0\in c_2}}{
+	\infer*{\Assert{c_1\subseteq c_2}}{} 
+	& 
+	\infer*{\Assert{c_0\in c_1}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\subseteq}\Elim{2}]{\Deny{c_0\in c_1}}{
+	\infer*{\Assert{c_1\subseteq c_2}}{} 
+	& 
+	\infer*{\Deny{c_0\in c_2}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{cc}
+$
+\infer[\DenyRule{\subseteq}\Intro{}]{\Deny{c_1\subseteq c_2}}{
+	\infer*{\Assert{c_0\in c_1}}{}
+	&
+	\infer*{\Deny{c_0\in c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\subseteq}\Elim{}{[i,j,k]}]{\varphi}{
+	\infer*{\Deny{c_1\subseteq c_2}}{}
+	&
+	\infer*{\varphi}{
+		\infer[\Label{i}]{\Set{c}}{}
+		&
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+		&
+		\infer[\Label{k}]{\Deny{c\in c_2}}{}
+	}
+}
+$
+\end{tabular}
+\bigskip
+
+
+% \Disjoint
+\subsection*{Exclusion / Disjointness [\texttt{rel}]: $\bigcirc_1\Disjoint\bigcirc_2$}
+\hfill OBS: $a\Disjoint b$ iff $a\cap b=\varnothing$ iff $a\setminus\AbsCompl{b}=\varnothing$ iff $b\setminus\AbsCompl{a}=\varnothing$ iff $a\subseteq \AbsCompl{b}$ iff $b\subseteq \AbsCompl{a}$
+\bigskip
+
+\noindent
+Axiom: $c_1 \Disjoint c_2\text{ iff }(\forall c)(\lnot(c\in c_1\land c\in c_2))$
+\smallskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\Disjoint}\Intro{}{[i,j,k]}]{\Assert{c_1\Disjoint c_2}}{
+	\infer*{\divideontimes}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+		& 
+		\infer[\Label{k}]{\Assert{c\in c_2}}{}
+	}
+}
+$
+\hspace{.2cm}
+&
+$
+\infer[\AssertRule{\Disjoint}\Intro{1}{[i,j]}]{\Assert{c_1\Disjoint c_2}}{
+	\infer*{\Deny{c\in c_2}}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+	}
+}
+$
+\hspace{.2cm}
+&
+$
+\infer[\AssertRule{\Disjoint}\Intro{2}{[i,j]}]{\Assert{c_1\Disjoint c_2}}{
+	\infer*{\Deny{c\in c_1}}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{c\in c_2}}{}
+	}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\Disjoint}\Elim{1}]{\Deny{c_0\in c_2}}{
+	\infer*{\Assert{c_1\Disjoint c_2}}{}
+	&
+	\infer*{\Assert{c_0\in c_1}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\Disjoint}\Elim{2}]{\Deny{c_0\in c_1}}{
+	\infer*{\Assert{c_1\Disjoint c_2}}{}
+	&
+	\infer*{\Assert{c_0\in c_2}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\DenyRule{\Disjoint}\Intro{}]{\Deny{c_1\Disjoint c_2}}{
+	\infer*{\Assert{c_0\in c_1}}{}
+	& 
+	\infer*{\Assert{c_0\in c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\Disjoint}\Elim{}{[i,j,k]}]{\varphi}{
+	\infer*{\Deny{c_1\Disjoint c_2}}{}
+	&
+	\infer*{\varphi}{
+		\infer[\Label{i}]{\Set{c}}{}
+		&
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+		&
+		\infer[\Label{k}]{\Assert{c\in c_2}}{}
+	}
+}
+$
+\end{tabular}
+\bigskip
+
+
+% EmptySet
+\subsection*{Empty set [\texttt{op}]: $\varnothing$}
+
+\smallskip
+\noindent
+Axiom: $c_0 \in \varnothing\text{ iff }\bot$
+\smallskip
+
+\noindent
+\begin{tabular}{c}
+$
+\infer[\AssertRule{\varnothing}\Elim{}]{\divideontimes}{
+	\infer*{\Assert{c_0\in\varnothing}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{c}
+$
+\infer[\DenyRule{\varnothing}\Intro{}]{
+	\Deny{c_0\in\varnothing}}{}
+$
+\end{tabular}
+\bigskip
+
+
+
+% UniversalSet
+\subsection*{Universal set [\texttt{op}]: $\Universal$}
+
+\smallskip
+\noindent
+Axiom: $c_0 \in \Universal\text{ iff }\top$
+\smallskip
+
+\noindent
+\begin{tabular}{c}
+$
+\infer[\DenyRule{\Universal}\Elim{}]{\divideontimes}{
+	\infer*{\Deny{c_0\in\Universal}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{c}
+$
+\infer[\AssertRule{\Universal}\Intro{}]{
+	\Assert{c_0\in\Universal}}{}
+$
+\end{tabular}
+\bigskip
+
+
+\newpage
+% \Intersection
+\subsection*{Intersection [\texttt{op}]: $\bigcirc_1\cap\bigcirc_2$}
+
+\smallskip
+\noindent
+Axiom: $c_0\in c_1\cap c_2\text{ iff }c_0\in c_1\land c_0\in c_2$
+\smallskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\cap}\Intro{}]{\Assert{c_0\in c_1\cap c_2}}{
+	\infer*{\Assert{c_0\in c_1}}{}
+	& 
+	\infer*{\Assert{c_0\in c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\cap}\Elim{1}]{\Assert{c_0\in c_2}}{
+	\infer*{\Assert{c_0\in c_1\cap c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\cap}\Elim{2}]{\Assert{c_0\in c_1}}{
+	\infer*{\Assert{c_0\in c_1\cap c_2}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\DenyRule{\cap}\Intro{1}]{\Deny{c_0\in c_1\cap c_2}}{
+	\infer*{\Deny{c_0\in c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\cap}\Intro{2}]{\Deny{c_0\in c_1\cap c_2}}{
+	\infer*{\Deny{c_0\in c_1}}{}
+}
+$
+\hspace{1cm}
+\\[5mm]
+$
+\infer[\DenyRule{\cap}\Intro{1}{[{i}]}]{\Deny{c_0\in c_1\cap c_2}}{
+	\infer*{\Deny{c_0\in c_2}}{\infer[\Label{i}]{\Assert{c_0\in c_1}}{}}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\cap}\Intro{2}{[{i}]}]{\Deny{c_0\in c_1\cap c_2}}{
+	\infer*{\Deny{c_0\in c_1}}{\infer[\Label{i}]{\Assert{c_0\in c_2}}{}}
+}
+$
+% Hypothetical reasoning
+%&
+%$
+%\infer[\DenyRule{\cap}\Elim{}{[i,j]}]{\varphi}{
+%	\infer*{\Deny{c_0\in c_1\cap c_2}}{}
+%	&
+%	\infer*{\varphi}{
+%		\infer[\Label{i}]{\Deny{c_0\in c_1}}{}
+%	}
+%	&
+%	\infer*{\varphi}{
+%		\infer[\Label{j}]{\Deny{c_0\in c_2}}{}
+%	}
+%}
+%$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\DenyRule{\cap}\Elim{1}]{\Deny{c_0\in c_2}}{
+	\infer*{\Deny{c_0\in c_1\cap c_2}}{}
+	&
+	\infer*{\Assert{c_0\in c_1}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\cap}\Elim{2}]{\Deny{c_0\in c_1}}{
+	\infer*{\Deny{c_0\in c_1\cap c_2}}{}
+	&
+	\infer*{\Assert{c_0\in c_2}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+
+% \Union
+\subsection*{Union [\texttt{op}]: $\bigcirc_1\cup\bigcirc_2$}
+
+\smallskip
+\noindent
+Axiom: $c_0\in c_1\cup c_2\text{ iff }c_0\in c_1\lor c_0\in c_2$
+\smallskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\cup}\Intro{1}]{\Assert{c_0\in c_1\cup c_2}}{
+	\infer*{\Assert{c_0\in c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\cup}\Intro{2}]{\Assert{c_0\in c_1\cup c_2}}{
+	\infer*{\Assert{c_0\in c_1}}{}
+}
+$
+\hspace{1cm}
+% Hypothetical reasoning
+%&
+%$
+%\infer[\AssertRule{\cup}\Elim{}{[i,j]}]{\varphi}{
+%	\infer*{\Assert{c_0\in c_1\cup c_2}}{}
+%	&
+%	\infer*{\varphi}{\infer[\Label{i}]{\Assert{c_0\in c_1}}{}}
+%	&
+%	\infer*{\varphi}{\infer[\Label{j}]{\Assert{c_0\in c_2}}{}}
+%}
+%$
+\\[5mm]
+$
+\infer[\AssertRule{\cup}\Intro{1}{[i]}]{\Assert{c_0\in c_1\cup c_2}}{
+	\infer*{\Assert{c_0\in c_2}}{\infer[\Label{i}]{\Deny{c_0\in c_1}}{}}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\cup}\Intro{2}{[i]}]{\Assert{c_0\in c_1\cup c_2}}{
+	\infer*{\Assert{c_0\in c_1}}{\infer[\Label{i}]{\Deny{c_0\in c_2}}{}}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\cup}\Elim{1}]{\Assert{c_0\in c_2}}{
+	\infer*{\Assert{c_0\in c_1\cup c_2}}{}
+	&
+	\infer*{\Deny{c_0\in c_1}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\cup}\Elim{2}]{\Assert{c_0\in c_1}}{
+	\infer*{\Assert{c_0\in c_1\cup c_2}}{}
+	&
+	\infer*{\Deny{c_0\in c_2}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\DenyRule{\cup}\Intro{}]{\Deny{c_0\in c_1\cup c_2}}{
+	\infer*{\Deny{c_0\in c_1}}{}
+	& 
+	\infer*{\Deny{c_0\in c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\cup}\Elim{1}]{\Deny{c_0\in c_2}}{
+	\infer*{\Deny{c_0\in c_1\cup c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\cup}\Elim{2}]{\Deny{c_0\in c_1}}{
+	\infer*{\Deny{c_0\in c_1\cup c_2}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+
+\newpage
+% \RelCompl
+\subsection*{Relative Complement, or Set Difference [\texttt{op}]: $\bigcirc_1\setminus\bigcirc_2$}
+
+\smallskip
+\noindent
+Axiom: $c_0\in c_1\setminus c_2\text{ iff }c_0\in c_1\land \lnot c_0\in c_2$
+\smallskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\setminus}\Intro{}]{\Assert{c_0\in c_1\setminus c_2}}{
+	\infer*{\Assert{c_0\in c_1}}{}
+	&
+	\infer*{\Deny{c_0\in c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\setminus}\Elim{1}]{\Deny{c_0\in c_2}}{
+	\infer*{\Assert{c_0\in c_1\setminus c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\setminus}\Elim{2}]{\Assert{c_0\in c_1}}{
+	\infer*{\Assert{c_0\in c_1\setminus c_2}}{}
+}
+$
+\\[2mm]
+$
+\infer[\DenyRule{\setminus}\Intro{1}]{\Deny{c_0\in c_1\setminus c_2}}{
+	\infer*{\Assert{c_0\in c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\setminus}\Intro{2}]{\Deny{c_0\in c_1\setminus c_2}}{
+	\infer*{\Deny{c_0\in c_1}}{}
+}
+$
+\hspace{1cm}
+\\[4mm]
+$
+\infer[\DenyRule{\setminus}\Intro{1}{[i]}]{\Deny{c_0\in c_1\setminus c_2}}{
+	\infer*{\Assert{c_0\in c_2}}{\infer[\Label{i}]{\Assert{c_0\in c_1}}{}}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\setminus}\Intro{2}{[i]}]{\Deny{c_0\in c_1\setminus c_2}}{
+	\infer*{\Deny{c_0\in c_1}}{\infer[\Label{i}]{\Deny{c_0\in c_2}}{}}
+}
+$
+\hspace{1cm}
+% Hypothetical reasoning
+%&
+%$
+%\infer[\DenyRule{\setminus}\Elim{}{[i,j]}]{\varphi}{
+%	\infer*{\Deny{c_0\in c_1\setminus c_2}}{}
+%	&
+%	\infer*{\varphi}{
+%		\infer[\Label{i}]{\Deny{c_0\in c_1}}{}
+%	}
+%	&
+%	\infer*{\varphi}{
+%		\infer[\Label{j}]{\Assert{c_0\in c_2}}{}
+%	}
+%}
+%$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{cc}
+%$
+%\infer[\DenyRule{\setminus}\Intro{}{[i]}]{\Deny{c_0\in c_1\setminus c_2}}{
+%	\infer*{\Assert{c_0\in c_2}}{
+%		\infer[\Label{i}]{\Assert{c_0\in c_1}}{}
+%	}
+%}
+%$
+%\hspace{1cm}
+%&
+$
+\infer[\DenyRule{\setminus}\Elim{1}]{\Assert{c_0\in c_2}}{
+	\infer*{\Deny{c_0\in c_1\setminus c_2}}{}
+	&
+	\infer*{\Assert{c_0\in c_1}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\setminus}\Elim{2}]{\Deny{c_0\in c_1}}{
+	\infer*{\Deny{c_0\in c_1\setminus c_2}}{}
+	&
+	\infer*{\Deny{c_0\in c_2}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+
+% \AbsCompl
+\subsection*{Absolute Complement [\texttt{op}]: $\AbsCompl{\bigcirc_1}$}
+
+\smallskip
+\noindent
+Axiom: $c_0\in \AbsCompl c_1\text{ iff }
+\lnot c_0\in c_1$
+\smallskip
+
+\noindent
+\begin{tabular}{cc}
+$
+\infer[\AssertRule{\AbsComplRule}\Intro{}]{\Assert{c_0\in\AbsCompl{c_1}}}{
+	\infer*{\Deny{c_0\in c_1}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\AbsComplRule}\Elim{}]{\Deny{c_0\in c_1}}{
+	\infer*{\Assert{c_0\in\AbsCompl{c_1}}}{}
+}
+$
+\\[2mm]
+$
+\infer[\DenyRule{\AbsComplRule}\Intro{}]{\Deny{c_0\in\AbsCompl{c_1}}}{
+	\infer*{\Assert{c_0\in c_1}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\AbsComplRule}\Elim{}]{\Assert{c_0\in c_1}}{
+	\infer*{\Deny{c_0\in\AbsCompl{c_1}}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+
+\newpage
+
+% \SymmDiff
+\subsection*{Symmetric Difference [\texttt{op}]: $\bigcirc_1\ominus\bigcirc_2$}
+
+\smallskip
+\noindent
+Axiom: $c_0\in c_1\ominus c_2\text{ iff }
+(c_0\in c_1 \land \lnot c_0 \in c_2) \lor (c_0\in c_2 \land \lnot c_0 \in c_1)$
+\smallskip
+
+\noindent
+\begin{tabular}{cccc}
+$
+\infer[\AssertRule{\ominus}\Intro{1}]{\Assert{c_0\in c_1 \ominus c_2}}{
+	\infer*{\Assert{c_0\in c_1}}{}
+	&
+	\infer*{\Deny{c_0\in c_2}}{}
+}
+$
+\hspace{.2cm}
+&
+$
+\infer[\AssertRule{\ominus}\Intro{2}]{\Assert{c_0\in c_1 \ominus c_2}}{
+	\infer*{\Deny{c_0\in c_1}}{}
+	&
+	\infer*{\Assert{c_0\in c_2}}{}
+}
+$
+\\[2mm]
+$
+\infer[\AssertRule{\ominus}\Elim{1a}]{\Deny{c_0\in c_2}}{
+	\infer*{\Assert{c_0\in c_1 \ominus c_2}}{}
+	&
+	\infer*{\Assert{c_0\in c_1}}{}
+}
+$
+\hspace{.2cm}
+&
+$
+\infer[\AssertRule{\ominus}\Elim{2a}]{\Deny{c_0\in c_1}}{
+	\infer*{\Assert{c_0\in c_1 \ominus c_2}}{}
+	&
+	\infer*{\Assert{c_0\in c_2}}{}
+}
+$
+\\[2mm]
+$
+\infer[\AssertRule{\ominus}\Elim{1b}]{\Assert{c_0\in c_2}}{
+	\infer*{\Assert{c_0\in c_1 \ominus c_2}}{}
+	&
+	\infer*{\Deny{c_0\in c_1}}{}
+}
+$
+\hspace{.2cm}
+&
+$
+\infer[\AssertRule{\ominus}\Elim{2b}]{\Assert{c_0\in c_1}}{
+	\infer*{\Assert{c_0\in c_1 \ominus c_2}}{}
+	&
+	\infer*{\Deny{c_0\in c_2}}{}
+}
+$
+\\[2mm]
+$
+\infer[\DenyRule{\ominus}\Intro{1}]{\Deny{c_0\in c_1 \ominus c_2}}{
+	\infer*{\Assert{c_0\in c_1}}{}
+	&
+	\infer*{\Assert{c_0\in c_2}}{}
+}
+$
+\hspace{.2cm}
+&
+$
+\infer[\DenyRule{\ominus}\Intro{2}]{\Deny{c_0\in c_1 \ominus c_2}}{
+	\infer*{\Deny{c_0\in c_1}}{}
+	&
+	\infer*{\Deny{c_0\in c_2}}{}
+}
+$
+\\[2mm]
+$
+\infer[\DenyRule{\ominus}\Elim{1a}]{\Assert{c_0\in c_2}}{
+	\infer*{\Deny{c_0\in c_1 \ominus c_2}}{}
+	&
+	\infer*{\Assert{c_0\in c_1}}{}
+}
+$
+\hspace{.2cm}
+&
+$
+\infer[\DenyRule{\ominus}\Elim{2a}]{\Assert{c_0\in c_1}}{
+	\infer*{\Deny{c_0\in c_1 \ominus c_2}}{}
+	&
+	\infer*{\Assert{c_0\in c_2}}{}
+}
+$
+\\[2mm]
+$
+\infer[\DenyRule{\ominus}\Elim{1b}]{\Deny{c_0\in c_2}}{
+	\infer*{\Deny{c_0\in c_1 \ominus c_2}}{}
+	&
+	\infer*{\Deny{c_0\in c_1}}{}
+}
+$
+\hspace{.2cm}
+&
+$
+\infer[\DenyRule{\ominus}\Elim{2b}]{\Deny{c_0\in c_1}}{
+	\infer*{\Deny{c_0\in c_1 \ominus c_2}}{}
+	&
+	\infer*{\Deny{c_0\in c_2}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+
+
+% OrdPair
+\subsection*{Ordered Pair [\texttt{op}]: $\bigcirc_1\times\bigcirc_2$}
+
+\smallskip
+\noindent
+Axiom: $(c_1,c_2)\in d_1\times d_2\text{ iff }
+c_1\in d_1 \land c_2 \in d_2 $
+\smallskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\times}\Intro{}]{\Assert{\Tuple{c_1,c_2}\in d_1\times d_2}}{
+	\infer*{\Assert{c_1\in d_1}}{}
+	&
+	\infer*{\Assert{c_2\in d_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\times}\Elim{1}]{\Assert{c_2\in d_2}}{
+	\infer*{\Assert{\Tuple{c_1,c_2}\in d_1\times d_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\times}\Elim{2}]{\Assert{c_1\in d_1}}{
+	\infer*{\Assert{\Tuple{c_1,c_2}\in d_1\times d_2}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\DenyRule{\times}\Intro{1}]{\Deny{\Tuple{c_1,c_2}\in d_1\times d_2}}{
+	\infer*{\Deny{c_2\in d_2}}{}
+}
+$
+\hspace{.2cm}
+&
+$
+\infer[\DenyRule{\times}\Intro{2}]{\Deny{\Tuple{c_1,c_2}\in d_1\times d_2}}{
+	\infer*{\Deny{c_1\in d_1}}{}
+}
+$
+\hspace{.2cm}
+% Hypothetical reasoning
+%&
+%$
+%\infer[\DenyRule{\times}\Elim{}{[i,j]}]{\varphi}{
+%	\infer*{\Deny{\Tuple{c_1,c_2}\in d_1\times d_2}}{}
+%	&
+%	\infer*{\varphi}{\infer{\Deny{c_1\in d_1}}{}}
+%	&
+%	\infer*{\varphi}{\infer{\Deny{c_2\in d_2}}{}}
+%}
+%$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{cc}
+$
+\infer[\DenyRule{\times}\Elim{1}]{\Deny{c_2\in d_2}}{
+	\infer*{\Deny{\Tuple{c_1,c_2}\in d_1\times d_2}}{}
+	&
+	\infer*{\Assert{c_1\in d_1}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\times}\Elim{2}]{\Deny{c_1\in d_1}}{
+	\infer*{\Deny{\Tuple{c_1,c_2}\in d_1\times d_2}}{}
+	&
+	\infer*{\Assert{c_2\in d_2}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+
+\newpage
+%%(Indexed) families of sets: 
+%%union, intersection \\
+
+
+\subsection*{Union of indexed family [\texttt{op}]: $\bigcup\limits_{\bigcirc_1\in \bigcirc_2}\bigcirc_3$}
+
+\smallskip
+\noindent
+Axiom: $c \in \bigcup\limits_{i\in I}c_i\text{ iff }
+(\exists j) (j\in I \land c\in c_j)$
+\smallskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\DenyRule{\cup}\Intro{}{[i,j,k]}]{\Deny{c\in \bigcup\limits_{i\in I}c_i}}{
+    \infer*{\divideontimes}{
+    	\infer[\Label{i}]{\Set{j}}{}
+    	&
+    	\infer[\Label{j}]{\Assert{j\in I}}{}
+    	&
+    	\infer[\Label{k}]{\Assert{c\in c_j}}{}
+    }
+}
+$
+\hspace{0.5cm}
+&
+$
+\infer[\DenyRule{\cup}\Intro{1}{[i,j]}]{\Deny{c\in \bigcup\limits_{i\in I}c_i}}{
+    \infer*{\Deny{c\in c_j}}{
+    	\infer[\Label{i}]{\Set{j}}{}
+    	&
+    	\infer[\Label{j}]{\Assert{j\in I}}{}
+    }
+}
+$
+\hspace{0.5cm}
+&
+$
+\infer[\DenyRule{\cup}\Intro{2}{[i,j]}]{\Deny{c\in \bigcup\limits_{i\in I}c_i}}{
+    \infer*{\Deny{j\in I}}{
+    	\infer[\Label{i}]{\Set{j}}{}
+    	&
+    	\infer[\Label{j}]{\Assert{c\in c_j}}{}
+    }
+}
+$
+\end{tabular}
+
+\bigskip
+\noindent
+
+\begin{tabular}{ccc}
+$
+\infer[\DenyRule{\cup}\Elim{1}]{\Deny{c\in c_j}}{
+	\infer*{\Deny{c\in \bigcup\limits_{i\in I}c_i}}{} 
+	& 
+	\infer*{\Assert{j\in I}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\cup}\Elim{2}]{\Deny{j\in I}}{
+	\infer*{\Deny{c\in \bigcup\limits_{i\in I}c_i}}{} 
+	& 
+	\infer*{\Assert{c\in c_j}}{}
+}
+$
+\end{tabular}
+
+\bigskip
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\cup}\Intro{}]{\Assert{c\in \bigcup\limits_{i\in I}c_i}}{
+	\infer*{\Assert{c\in c_j}}{}
+	& 
+	\infer*{\Assert{j\in I}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\cup}\Elim{}{[i,j,k]}]{\varphi}{
+	\infer*{\Assert{c\in \bigcup\limits_{i\in I}c_i}}{}
+	&
+	\infer*{\varphi}{
+		\infer[\Label{i}]{\Set{j}}{}
+		&
+		\infer[\Label{j}]{\Assert{j\in I}}{}
+		&
+		\infer[\Label{k}]{\Assert{c\in c_j}}{}
+	}
+}
+$
+\end{tabular}
+\bigskip
+
+
+\subsection*{Intersection of indexed family [\texttt{op}]: $\bigcap\limits_{\bigcirc_1\in \bigcirc_2}\bigcirc_3$}
+
+\smallskip
+\noindent
+Axiom: $c \in \bigcap\limits_{i\in I}c_i\text{ iff }
+(\forall j) (j\in I \to c\in c_j)$
+\smallskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\cap}\Intro{}{[i,j,k]}]{\Assert{c\in \bigcap\limits_{i\in I}c_i}}{
+    \infer*{\divideontimes}{
+    	\infer[\Label{i}]{\Set{j}}{}
+    	&
+    	\infer[\Label{j}]{\Assert{j\in I}}{}
+    	&
+    	\infer[\Label{k}]{\Deny{c\in c_j}}{}
+    }
+}
+$
+\hspace{0.5cm}
+&
+$
+\infer[\AssertRule{\cap}\Intro{1}{[i,j]}]{\Assert{c\in \bigcap\limits_{i\in I}c_i}}{
+    \infer*{\Assert{c\in c_j}}{
+    	\infer[\Label{i}]{\Set{j}}{}
+    	&
+    	\infer[\Label{j}]{\Assert{j\in I}}{}
+    }
+}
+$
+\hspace{0.5cm}
+&
+$
+\infer[\AssertRule{\cap}\Intro{2}{[i,j]}]{\Assert{c\in \bigcap\limits_{i\in I}c_i}}{
+    \infer*{\Deny{j\in I}}{
+    	\infer[\Label{i}]{\Set{j}}{}
+    	&
+    	\infer[\Label{j}]{\Deny{c\in c_j}}{}
+    }
+}
+$
+\end{tabular}
+
+\bigskip
+\noindent
+
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\cap}\Elim{1}]{\Assert{c\in c_j}}{
+	\infer*{\Assert{c\in \bigcap\limits_{i\in I}c_i}}{} 
+	& 
+	\infer*{\Assert{j\in I}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\cap}\Elim{2}]{\Deny{j\in I}}{
+	\infer*{\Assert{c\in \bigcap\limits_{i\in I}c_i}}{} 
+	& 
+	\infer*{\Deny{c\in c_j}}{}
+}
+$
+\end{tabular}
+
+\bigskip
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\DenyRule{\cap}\Intro{}]{\Deny{c\in \bigcap\limits_{i\in I}c_i}}{
+	\infer*{\Deny{c\in c_j}}{}
+	& 
+	\infer*{\Assert{j\in I}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\cap}\Elim{}{[i,j,k]}]{\varphi}{
+	\infer*{\Deny{c\in \bigcap\limits_{i\in I}c_i}}{}
+	&
+	\infer*{\varphi}{
+		\infer[\Label{i}]{\Set{j}}{}
+		&
+		\infer[\Label{j}]{\Assert{j\in I}}{}
+		&
+		\infer[\Label{k}]{\Deny{c\in c_j}}{}
+	}
+}
+$
+\end{tabular}
+\bigskip
+
+\newpage
+
+
+\subsection*{Big union of sets [\texttt{op}]: $\bigcup\bigcirc_1$}
+
+\smallskip
+\noindent
+Axiom: $c_1 \in \bigcup c_2\text{ iff }
+(\exists c) (c\in c_2 \land c_1\in c)$
+\smallskip
+\smallskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\DenyRule{\cup}\Intro{}{[i,j,k]}]{\Deny{c_1\in \bigcup c_2}}{
+    \infer*{\divideontimes}{
+    	\infer[\Label{i}]{\Set{c}}{}
+    	&
+    	\infer[\Label{j}]{\Assert{c\in c_2}}{}
+    	&
+    	\infer[\Label{k}]{\Assert{c_1\in c}}{}
+    }
+}
+$
+\hspace{0.5cm}
+&
+$
+\infer[\DenyRule{\cup}\Intro{1}{[i,j]}]{\Deny{c_1\in \bigcup c_2}}{
+    \infer*{\Deny{c_1\in c}}{
+    	\infer[\Label{i}]{\Set{c}}{}
+    	&
+    	\infer[\Label{j}]{\Assert{c\in c_2}}{}
+    }
+}
+$
+\hspace{0.5cm}
+&
+$
+\infer[\DenyRule{\cup}\Intro{2}{[i,j]}]{\Deny{c_1\in \bigcup c_2}}{
+    \infer*{\Deny{c\in c_2}}{
+    	\infer[\Label{i}]{\Set{c}}{}
+    	&
+    	\infer[\Label{j}]{\Assert{c_1\in c}}{}
+    }
+}
+$
+\end{tabular}
+
+\bigskip
+\noindent
+
+\begin{tabular}{ccc}
+$
+\infer[\DenyRule{\cup}\Elim{1}]{\Deny{c_1\in c_0}}{
+	\infer*{\Deny{c_1\in \bigcup c_2}}{} 
+	& 
+	\infer*{\Assert{c_0\in c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\cup}\Elim{2}]{\Deny{c_0\in c_2}}{
+	\infer*{\Deny{c_1\in \bigcup c_2}}{} 
+	& 
+	\infer*{\Assert{c_1\in c_0}}{}
+}
+$
+\end{tabular}
+
+\bigskip
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\cup}\Intro{}]{\Assert{c_1\in \bigcup c_2}}{
+	\infer*{\Assert{c_0\in c_2}}{}
+	& 
+	\infer*{\Assert{c_1\in c_0}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\cup}\Elim{}{[i,j,k]}]{\varphi}{
+	\infer*{\Assert{c_1\in \bigcup c_2}}{}
+	&
+	\infer*{\varphi}{
+		\infer[\Label{i}]{\Set{c}}{}
+		&
+		\infer[\Label{j}]{\Assert{c\in c_2}}{}
+		&
+		\infer[\Label{k}]{\Assert{c_1\in c}}{}
+	}
+}
+$
+\end{tabular}
+\bigskip
+
+
+\subsection*{Big intersection of sets [\texttt{op}]: $\bigcap\bigcirc_1$}
+
+\smallskip
+\noindent
+Axiom: $c_1 \in \bigcap c_2\text{ iff }
+(\forall c) (c\in c_2 \to c_1\in c)$
+\smallskip
+\smallskip
+\smallskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\cap}\Intro{}{[i,j,k]}]{\Assert{c_1\in \bigcap c_2}}{
+    \infer*{\divideontimes}{
+    	\infer[\Label{i}]{\Set{c}}{}
+    	&
+    	\infer[\Label{j}]{\Assert{c\in c_2}}{}
+    	&
+    	\infer[\Label{k}]{\Deny{c_1\in c}}{}
+    }
+}
+$
+\hspace{0.5cm}
+&
+$
+\infer[\AssertRule{\cap}\Intro{1}{[i,j]}]{\Assert{c_1\in \bigcap c_2}}{
+    \infer*{\Assert{c_1\in c}}{
+    	\infer[\Label{i}]{\Set{c}}{}
+    	&
+    	\infer[\Label{j}]{\Assert{c\in c_2}}{}
+    }
+}
+$
+\hspace{0.5cm}
+&
+$
+\infer[\AssertRule{\cap}\Intro{2}{[i,j]}]{\Assert{c_1\in \bigcap c_2}}{
+    \infer*{\Deny{c\in c_2}}{
+    	\infer[\Label{i}]{\Set{c}}{}
+    	&
+    	\infer[\Label{j}]{\Deny{c_1\in c}}{}
+    }
+}
+$
+\end{tabular}
+
+\bigskip
+\noindent
+
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\cap}\Elim{1}]{\Assert{c_1\in c_0}}{
+	\infer*{\Assert{c_1\in \bigcap c_2}}{} 
+	& 
+	\infer*{\Assert{c_0\in c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\cap}\Elim{2}]{\Deny{c_0\in c_2}}{
+	\infer*{\Assert{c_1\in \bigcap c_2}}{} 
+	& 
+	\infer*{\Deny{c_1\in c_0}}{}
+}
+$
+\end{tabular}
+
+\bigskip
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\DenyRule{\cap}\Intro{}]{\Deny{c_1\in \bigcap c_2}}{
+	\infer*{\Assert{c_0\in c_2}}{}
+	& 
+	\infer*{\Deny{c_1\in c_0}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\cap}\Elim{}{[i,j,k]}]{\varphi}{
+	\infer*{\Deny{c_1\in \bigcap c_2}}{}
+	&
+	\infer*{\varphi}{
+		\infer[\Label{i}]{\Set{c}}{}
+		&
+		\infer[\Label{j}]{\Assert{c\in c_2}}{}
+		&
+		\infer[\Label{k}]{\Deny{c_1\in c}}{}
+	}
+}
+$
+\end{tabular}
+\bigskip
+
+\newpage
+
+\subsection*{Equality [\texttt{rel}]: $\bigcirc_1 = \bigcirc_2$}
+
+\smallskip
+\noindent
+Axiom: $c_1 = c_2\text{ iff }
+(\forall c) (c\in c_1 \to c\in c_2) \land (\forall c) (c\in c_2 \to c\in c_1)$
+\smallskip
+\smallskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{=}\Intro{1}{[i,j,k,l,m,n]}]{\Assert{c_1= c_2}}{
+	\infer*{\divideontimes}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+		& 
+		\infer[\Label{k}]{\Deny{c\in c_2}}{}
+	}
+    &
+	\infer*{\divideontimes}{
+		\infer[\Label{l}]{\Set{c}}{} 
+		& 
+		\infer[\Label{m}]{\Assert{c\in c_2}}{}
+		& 
+		\infer[\Label{n}]{\Deny{c\in c_1}}{}
+	}
+}
+$
+\end{tabular}
+
+\bigskip
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{=}\Intro{2}{[i,j,k,l,m]}]{\Assert{c_1= c_2}}{
+	\infer*{\divideontimes}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+		& 
+		\infer[\Label{k}]{\Deny{c\in c_2}}{}
+	}
+    &
+	\infer*{\Assert{c\in c_1}}{
+		\infer[\Label{l}]{\Set{c}}{} 
+		& 
+		\infer[\Label{m}]{\Assert{c\in c_2}}{}
+	}
+}
+$
+\end{tabular}
+
+\bigskip
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{=}\Intro{3}{[i,j,k,l,m]}]{\Assert{c_1= c_2}}{
+	\infer*{\divideontimes}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+		& 
+		\infer[\Label{k}]{\Deny{c\in c_2}}{}
+	}
+    &
+	\infer*{\Deny{c\in c_2}}{
+		\infer[\Label{l}]{\Set{c}}{} 
+		& 
+		\infer[\Label{m}]{\Deny{c\in c_1}}{}
+	}
+}
+$
+\end{tabular}
+
+\bigskip
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{=}\Intro{4}{[i,j,k,l,m]}]{\Assert{c_1= c_2}}{
+	\infer*{\Assert{c\in c_2}}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+	}
+    &
+	\infer*{\divideontimes}{
+		\infer[\Label{k}]{\Set{c}}{} 
+		& 
+		\infer[\Label{l}]{\Assert{c\in c_2}}{}
+		& 
+		\infer[\Label{m}]{\Deny{c\in c_1}}{}
+	}
+}
+$
+\end{tabular}
+
+\bigskip
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{=}\Intro{5}{[i,j,k,l]}]{\Assert{c_1= c_2}}{
+	\infer*{\Assert{c\in c_2}}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+	}
+    &
+	\infer*{\Assert{c\in c_1}}{
+		\infer[\Label{k}]{\Set{c}}{} 
+		& 
+		\infer[\Label{l}]{\Assert{c\in c_2}}{}
+	}
+}
+$
+&
+$
+\infer[\AssertRule{=}\Intro{6}{[i,j,k,l]}]{\Assert{c_1= c_2}}{
+	\infer*{\Assert{c\in c_2}}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+	}
+    &
+	\infer*{\Deny{c\in c_2}}{
+		\infer[\Label{k}]{\Set{c}}{} 
+		& 
+		\infer[\Label{l}]{\Deny{c\in c_1}}{}
+	}
+}
+$
+\end{tabular}
+
+\bigskip
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{=}\Intro{7}{[i,j,k,l,m]}]{\Assert{c_1= c_2}}{
+	\infer*{\Deny{c\in c_1}}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Deny{c\in c_2}}{}
+	}
+    &
+	\infer*{\divideontimes}{
+		\infer[\Label{k}]{\Set{c}}{} 
+		& 
+		\infer[\Label{l}]{\Assert{c\in c_2}}{}
+		& 
+		\infer[\Label{m}]{\Deny{c\in c_1}}{}
+	}
+}
+$
+\end{tabular}
+
+\bigskip
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{=}\Intro{8}{[i,j,k,l]}]{\Assert{c_1= c_2}}{
+	\infer*{\Deny{c\in c_1}}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Deny{c\in c_2}}{}
+	}
+    &
+	\infer*{\Assert{c\in c_1}}{
+		\infer[\Label{k}]{\Set{c}}{} 
+		& 
+		\infer[\Label{l}]{\Assert{c\in c_2}}{}
+	}
+}
+$
+&
+$
+\infer[\AssertRule{=}\Intro{9}{[i,j,k,l]}]{\Assert{c_1= c_2}}{
+	\infer*{\Deny{c\in c_1}}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Deny{c\in c_2}}{}
+	}
+    &
+	\infer*{\Deny{c\in c_2}}{
+		\infer[\Label{k}]{\Set{c}}{} 
+		& 
+		\infer[\Label{l}]{\Deny{c\in c_1}}{}
+	}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{=}\Elim{1}]{\Assert{c_0\in c_2}}{
+	\infer*{\Assert{c_1= c_2}}{} 
+	& 
+	\infer*{\Assert{c_0\in c_1}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{=}\Elim{2}]{\Assert{c_0\in c_1}}{
+	\infer*{\Assert{c_1= c_2}}{} 
+	& 
+	\infer*{\Assert{c_0\in c_2}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{=}\Elim{3}]{\Deny{c_0\in c_1}}{
+	\infer*{\Assert{c_1= c_2}}{} 
+	& 
+	\infer*{\Deny{c_0\in c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{=}\Elim{4}]{\Deny{c_0\in c_2}}{
+	\infer*{\Assert{c_1= c_2}}{} 
+	& 
+	\infer*{\Deny{c_0\in c_1}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{cc}
+$
+\infer[\DenyRule{=}\Intro{1}]{\Deny{c_1= c_2}}{
+	\infer*{\Assert{c_0\in c_1}}{}
+	&
+	\infer*{\Deny{c_0\in c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{=}\Intro{2}]{\Deny{c_1= c_2}}{
+	\infer*{\Assert{c_0\in c_2}}{}
+	&
+	\infer*{\Deny{c_0\in c_1}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{cc}
+$
+\infer[\DenyRule{=}\Elim{1}{[i,j,k]}]{\varphi}{
+	\infer*{\Deny{c_1= c_2}}{}
+	&
+	\infer*{\varphi}{
+		\infer[\Label{i}]{\Set{c}}{}
+		&
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+		&
+		\infer[\Label{k}]{\Deny{c\in c_2}}{}
+	}
+}
+$
+\hspace{0.5cm}
+&
+$
+\infer[\DenyRule{=}\Elim{2}{[i,j,k]}]{\varphi}{
+	\infer*{\Deny{c_1= c_2}}{}
+	&
+	\infer*{\varphi}{
+		\infer[\Label{i}]{\Set{c}}{}
+		&
+		\infer[\Label{j}]{\Assert{c\in c_2}}{}
+		&
+		\infer[\Label{k}]{\Deny{c\in c_1}}{}
+	}
+}
+$
+\end{tabular}
+
+\newpage
+\subsection*{Powerset [\texttt{op}]: $\wp \bigcirc_1$}
+\smallskip
+
+\smallskip
+\noindent
+Axiom: $c_1 \in \Powerset c_2\text{ iff }
+(\forall c) (c\in c_1 \to c\in c_2)$
+\smallskip
+\smallskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\Powerset}\Intro{}{[i,j,k]}]{\Assert{c_1\in\Powerset c_2}}{
+	\infer*{\divideontimes}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+		& 
+		\infer[\Label{k}]{\Deny{c\in c_2}}{}
+	}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\Powerset}\Intro{1}{[i,j]}]{\Assert{c_1\in\Powerset c_2}}{
+	\infer*{\Assert{c\in c_2}}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+	}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\Powerset}\Intro{2}{[i,j]}]{\Assert{c_1\in\Powerset c_2}}{
+	\infer*{\Deny{c\in c_1}}{
+		\infer[\Label{i}]{\Set{c}}{} 
+		& 
+		\infer[\Label{j}]{\Deny{c\in c_2}}{}
+	}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\Powerset}\Elim{1}]{\Assert{c_0\in c_2}}{
+	\infer*{\Assert{c_1\in\Powerset c_2}}{} 
+	& 
+	\infer*{\Assert{c_0\in c_1}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\AssertRule{\Powerset}\Elim{2}]{\Deny{c_0\in c_1}}{
+	\infer*{\Assert{c_1\in\Powerset c_2}}{} 
+	& 
+	\infer*{\Deny{c_0\in c_2}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{cc}
+$
+\infer[\DenyRule{\Powerset}\Intro{}]{\Deny{c_1 \in\Powerset c_2}}{
+	\infer*{\Assert{c_0\in c_1}}{}
+	&
+	\infer*{\Deny{c_0\in c_2}}{}
+}
+$
+\hspace{1cm}
+&
+$
+\infer[\DenyRule{\Powerset}\Elim{}{[i,j,k]}]{\varphi}{
+	\infer*{\Deny{c_1\in\Powerset c_2}}{}
+	&
+	\infer*{\varphi}{
+		\infer[\Label{i}]{\Set{c}}{}
+		&
+		\infer[\Label{j}]{\Assert{c\in c_1}}{}
+		&
+		\infer[\Label{k}]{\Deny{c\in c_2}}{}
+	}
+}
+$
+\end{tabular}
+
+\subsection*{Exponentiation [\texttt{op}]: $\bigcirc_1^{\circ_2}$}
+OBS: $\circ_2$ is a nat
+\smallskip
+
+\smallskip
+\noindent
+Axiom: $(c_1,c_2,\dots,c_n) \in d^n\text{ iff }
+(\forall i) (1\leq i
+\leq n \to c_i\in d)$
+\smallskip
+\smallskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{\times}\Intro{}]{\Assert{\Tuple{c_1,c_2,\dots,c_n}\in d^n}}{
+	\infer*{\Assert{c_1\in d}}{}
+	&
+	\infer*{\Assert{c_2\in d}}{}
+	&
+    \dots
+    &
+	\infer*{\Assert{c_n\in d}}{}
+}
+$
+\hspace{0.15cm}
+&
+$
+\infer[\AssertRule{\times}\Elim{i}]{\Assert{c_i\in d}}{
+	\infer*{\Assert{\Tuple{c_1,c_2,\dots,c_n}\in d^n}}{}
+}
+$
+\hspace{0.15cm}
+&
+$
+\infer[\DenyRule{\times}\Intro{i}]{\Deny{\Tuple{c_1,c_2,\dots,c_n}\in d^n}}{
+	\infer*{\Deny{c_i\in d}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{cc}
+$
+\infer[\DenyRule{\times}\Elim{i}]{\Deny{c_i\in d}}{
+	\infer*{\Deny{\Tuple{c_1,c_2,\dots,c_n}\in d^n}}{}
+	&
+    \infer*{\Assert{c_1\in d}}{}
+	&
+	\infer*{\Assert{c_2\in d}}{}
+	&
+    \dots
+	&
+    \infer*{\Assert{c_{i-1}\in d}}{}
+	&
+	\infer*{\Assert{c_{i+1}\in d}}{}
+	&
+    \dots
+    &
+	\infer*{\Assert{c_n\in d}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\newpage
+\subsection*{Injectiveness [\texttt{rel}]:  $inj(\bigcirc_1)$}
+\smallskip
+
+\smallskip
+\noindent
+Axiom: $inf(f)\text{ iff }
+(\forall x)(x \in dom(f) \to (\forall y)(y\in dom(g) \to (f(x)=f(y)\to x=y)))$
+\smallskip
+\smallskip
+
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{inj\,}\Intro{}{[i,j,k,l,m,n]}]{\Assert{inj(f)}}{
+	\infer*{\divideontimes}{
+		\infer[\Label{i}]{\Set{x}}{} 
+		& 
+		\infer[\Label{j}]{\Set{y}}{}
+		& 
+		\infer[\Label{k}]{\Assert{x\in dom(f)}}{}
+		& 
+		\infer[\Label{l}]{\Assert{y\in dom(f)}}{}
+		& 
+		\infer[\Label{m}]{\Assert{f(x)= f(y)}}{}
+		& 
+		\infer[\Label{n}]{\Deny{x= y}}{}
+	}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{inj\,}\Intro{1}{[i,j,k,l,m]}]{\Assert{inj(f)}}{
+	\infer*{\Assert{x= y}}{
+		\infer[\Label{i}]{\Set{x}}{} 
+		& 
+		\infer[\Label{j}]{\Set{y}}{}
+		& 
+		\infer[\Label{k}]{\Assert{x\in dom(f)}}{}
+		& 
+		\infer[\Label{l}]{\Assert{y\in dom(f)}}{}
+		& 
+		\infer[\Label{m}]{\Assert{f(x)= f(y)}}{}
+	}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{inj\,}\Intro{2}{[i,j,k,l,m]}]{\Assert{inj(f)}}{
+	\infer*{\Deny{f(x)= f(y)}}{
+		\infer[\Label{i}]{\Set{x}}{} 
+		& 
+		\infer[\Label{j}]{\Set{y}}{}
+		& 
+		\infer[\Label{k}]{\Assert{x\in dom(f)}}{}
+		& 
+		\infer[\Label{l}]{\Assert{y\in dom(f)}}{}
+		& 
+		\infer[\Label{m}]{\Deny{x= y}}{}
+	}
+}
+$
+\end{tabular}
+% \bigskip
+
+% \noindent
+% \begin{tabular}{ccc}
+% $
+% \infer[\AssertRule{inj\,}\Intro{3}{[i,j,k,l,m]}]{\Assert{inj(f)}}{
+% 	\infer*{\Deny{y\in dom(f)}}{
+% 		\infer[\Label{i}]{\Set{x}}{} 
+% 		& 
+% 		\infer[\Label{j}]{\Set{y}}{}
+% 		& 
+% 		\infer[\Label{k}]{\Assert{x\in dom(f)}}{}
+% 		& 
+% 		\infer[\Label{l}]{\Assert{f(x)= f(y)}}{}
+% 		& 
+% 		\infer[\Label{m}]{\Deny{x= y}}{}
+% 	}
+% }
+% $
+% \end{tabular}
+% \bigskip
+
+% \noindent
+% \begin{tabular}{ccc}
+% $
+% \infer[\AssertRule{inj\,}\Intro{4}{[i,j,k,l,m]}]{\Assert{inj(f)}}{
+% 	\infer*{\Deny{x\in dom(f)}}{
+% 		\infer[\Label{i}]{\Set{x}}{} 
+% 		& 
+% 		\infer[\Label{j}]{\Set{y}}{}
+% 		& 
+% 		\infer[\Label{k}]{\Assert{y\in dom(f)}}{}
+% 		& 
+% 		\infer[\Label{l}]{\Assert{f(x)= f(y)}}{}
+% 		& 
+% 		\infer[\Label{m}]{\Deny{x= y}}{}
+% 	}
+% }
+% $
+% \end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{inj\,}\Elim{1}]{\Assert{x= y}}{
+	\infer*{\Assert{inj(f)}}{} 
+	& 
+	\infer*{\Assert{x\in dom(f)}}{}
+	& 
+	\infer*{\Assert{y\in dom(f)}}{}
+	& 
+	\infer*{\Assert{f(x)= f(y)}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{ccc}
+$
+\infer[\AssertRule{inj\,}\Elim{2}]{\Deny{f(x)= f(y)}}{
+	\infer*{\Assert{inj(f)}}{} 
+	& 
+	\infer*{\Assert{x\in dom(f)}}{}
+	& 
+	\infer*{\Assert{y\in dom(f)}}{}
+	& 
+	\infer*{\Deny{x= y}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{cc}
+$
+\infer[\DenyRule{inj\,}\Intro{}]{\Deny{inj(f)}}{
+	\infer*{\Assert{x\in dom(f)}}{}
+	&
+	\infer*{\Assert{y\in dom(f)}}{}
+	&
+	\infer*{\Assert{f(x)= f(y)}}{}
+	&
+	\infer*{\Deny{x= y}}{}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{cc}
+$
+\infer[\DenyRule{inj\,}\Elim{}{[i,j,k,l,m,n]}]{\varphi}{
+	\infer*{\Deny{inj(f)}}{}
+	&
+	\infer*{\varphi}{
+        \infer[\Label{i}]{\Set{x}}{} 
+		& 
+		\infer[\Label{j}]{\Set{y}}{}
+		& 
+		\infer[\Label{k}]{\Assert{x\in dom(f)}}{}
+		& 
+		\infer[\Label{l}]{\Assert{y\in dom(f)}}{}
+		& 
+		\infer[\Label{m}]{\Assert{f(x)= f(y)}}{}
+		& 
+		\infer[\Label{n}]{\Deny{x= y}}{}
+	}
+}
+$
+\end{tabular}
+\subsection*{Surjectiveness [\texttt{rel}]:  $surj(\bigcirc_1)$}
+\smallskip
+
+\smallskip
+\noindent
+Axiom: $surj(f)\text{ iff }
+(\forall y) (y \in cod(f) \to (\exists x)(x\in dom(g) \land  (f(x)=y)))$
+\smallskip
+\smallskip
+
+\noindent
+\begin{tabular}{cc}
+$
+\infer[\AssertRule{surj\,}\Intro{}{[i,j]}]{\Assert{surj(f)}}{
+	\infer*{\Assert{x\in dom(f)}}{}
+	&
+	\infer*{\Assert{f(x)= y}}{
+        \infer[\Label{i}]{\Set{y}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{y\in cod(f)}}{}
+	}
+}
+$
+&
+\hspace{1em}
+
+$
+\infer[\DenyRule{surj\,}\Intro{}{[i,j]}]{\Deny{surj(f)}}{
+	\infer*{\Assert{y\in cod(f)}}{}
+	&
+	\infer*{\Deny{f(x)= y}}{
+        \infer[\Label{i}]{\Set{x}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{x\in dom(f)}}{}
+	}
+}
+$
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{cc}
+$
+\infer[\AssertRule{surj\,}\Elim{}{[i,j,k]}]{\varphi}{
+	\infer*{\Assert{surj(f)}}{}
+	&
+	\infer*{\Assert{y\in cod(f)}}{}
+	&
+	\infer*{\varphi}{
+        \infer[\Label{i}]{\Set{x}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{x\in dom(f)}}{}
+		& 
+		\infer[\Label{k}]{\Assert{f(x)= y}}{}
+	}
+}
+$
+\end{tabular}
+
+
+\bigskip
+
+\noindent
+\begin{tabular}{cc}
+$
+\infer[\DenyRule{surj\,}\Elim{}{[i,j,k,l,m,n]}]{\varphi}{
+	\infer*{\Deny{surj(f)}}{}
+	&
+	\infer*{\varphi}{
+        \infer[\Label{i}]{\Set{y}}{} 
+		& 
+		\infer[\Label{j}]{\Assert{y\in cod(f)}}{}
+		& 
+		\infer[\Label{k}]{\Deny{x\in dom(f)}}{}
+	}
+	&
+	\infer*{\varphi}{
+        \infer[\Label{l}]{\Set{y}}{} 
+		& 
+		\infer[\Label{m}]{\Assert{y\in cod(f)}}{}
+		& 
+		\infer[\Label{n}]{\Deny{f(x)= y}}{}
+	}
+}
+$
+\end{tabular}
+
+% \newpage
+
+% \subsection*{TODO}
+
+% \noindent
+% Functions: \\
+% partial vs total \\
+% source, target, graph \\
+% domain, image \\
+% -- \\
+% \noindent
+% characteristic function of a subset of a given set \\
+% -- \\
+% \noindent
+% direct image \\
+% pre-image \\
+% -- \\
+% \noindent
+% function restriction \\
+% function composition \\
+% function iteration \\
+% closure of a set under a function \\
+% -- \\
+% \noindent
+% invertibility: the inverse of a function \& the inverse function \\
+% inverse to the left \& inverse to the right \\
+% -- \\
+% \noindent
+% injectivity \\
+% surjectivity \\
+% cardinal arithmetic \\
+
+
+% \noindent 
+% Relations: \\ 
+% inverse, composition, iterations, closures \\
+% equivalence relations \\
+% order relations \\
+% well-founded relations \\
+
+\end{document}
+
+
+
+
+%%%%%%%%%%%%%%%%%%
+
+% OrdPair
+\subsection*{Ordered Pair: $\times$}
+
+\noindent
+\begin{tabular}{c}
+\end{tabular}
+\bigskip
+

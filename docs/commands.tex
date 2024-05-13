@@ -1,0 +1,45 @@
+%% NEW COMMANDS
+\newcommand{\Deriv}[1]{\mathcal{D}_{#1}}
+\newcommand{\Incl}{\texttt{incl}}
+\newcommand{\Intro}[1]{\mathbf{I}_{#1}}
+\newcommand{\Elim}[1]{\mathbf{E}_{#1}}
+\newcommand{\Assert}[1]{\mathrel{\color{blue}{+}}{#1}}
+\newcommand{\Deny}[1]{\mathrel{\color{red}{-}}{#1}}
+\newcommand{\AssertRule}[1]{{+}{#1}}
+\newcommand{\DenyRule}[1]{{-}{#1}}
+\newcommand{\Set}[1]{\texttt{\color{Green}{Set }}{#1}}
+\newcommand{\Label}[1]{{\![#1]}}
+\newcommand{\AbsCompl}[1]{\overline{#1}}
+\newcommand{\AbsComplRule}{^{\mbox{---}\,}}
+\newcommand{\Tuple}[1]{\left(#1\right)}
+\newcommand{\Subst}[3]{#1[#2\mapsto#3]}
+\newcommand{\Spec}{\mathbf{spec}\,}
+\newcommand{\SetB}[4]{\{#1\in#2\mid\Subst{#3}{#4}{#1}\}}
+\newcommand{\Opp}[1]{\widetilde{\smash{#1}}}
+\newcommand{\OppN}[1]{\widetilde{#1}}
+\newcommand{\Place}{\bigcirc}
+\newcommand{\Universal}{\mathcal U}
+\newcommand{\Powerset}{\wp\,}
+\newcommand{\eq}{\approx}
+
+\usepackage{accents}
+\newcommand{\dbtilde}[1]{\accentset{\approx}{#1}}
+% another one
+\usepackage[extra]{tipa}
+\newcommand{\dbltilde}[1]{\kern-1pt$#1$}
+
+% Building a symbol for the Disjointness relation
+%\newcommand{\Disjoint}{\mathrel{\rbrbrak\!\lbrbrak}} % uses stix
+%\newcommand{\Disjoint}{\mathrel{\rangle\!\langle}}
+\makeatletter
+\DeclareFontEncoding{LS2}{}{\@noaccents}
+\makeatother
+\DeclareFontSubstitution{LS2}{stix}{m}{n}
+%
+\DeclareSymbolFont{largesymbolsstix}{LS2}{stixex}{m}{n}
+%
+%\DeclareMathDelimiter{\lbrbrak}{\mathopen}{largesymbolsstix}{"EE}{largesymbolsstix}{"14}
+%\DeclareMathDelimiter{\rbrbrak}{\mathclose}{largesymbolsstix}{"EF}{largesymbolsstix}{"15}
+\DeclareMathDelimiter{\lbrbrak}{\mathrel}{largesymbolsstix}{"EE}{largesymbolsstix}{"14}
+\DeclareMathDelimiter{\rbrbrak}{\mathrel}{largesymbolsstix}{"EF}{largesymbolsstix}{"15}
+\newcommand{\Disjoint}{\rbrbrak\lbrbrak}
